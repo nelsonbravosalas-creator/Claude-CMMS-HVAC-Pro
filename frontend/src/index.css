@@ -1,0 +1,167 @@
+@import url("https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
+@import "tailwindcss";
+
+/*
+  ──────────────────────────────────────────────────────────────
+  DESIGN TOKENS — CMMS HVAC PRO
+  Fuente única de verdad de color/tipografía/espaciado.
+  3 temas conmutables vía [data-theme] en <html>: dark | light | cyberpunk.
+  Los componentes SOLO consumen tokens semánticos (bg-card, text-muted,
+  border-default, bg-primary…) — nunca hex hardcodeado.
+  ──────────────────────────────────────────────────────────────
+*/
+
+@theme {
+  /* Tipografía */
+  --font-sans: "Rajdhani", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+
+  /* Radios */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  /* Superficies (defaults = tema dark) */
+  --color-base: #0a0d14;
+  --color-surface: #0f1320;
+  --color-card: #1a1f2e;
+  --color-modal: #0d1117;
+  --color-overlay: rgba(0, 0, 0, 0.7);
+
+  /* Texto */
+  --color-fg: #f3f4f6;
+  --color-fg-secondary: #e5e7eb;
+  --color-fg-muted: #9ca3af;
+  --color-fg-faint: #6b7280;
+
+  /* Bordes */
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-strong: rgba(255, 255, 255, 0.16);
+
+  /* Marca / acción */
+  --color-primary: #22d3ee;          /* cyan eléctrico */
+  --color-primary-hover: #38dcf2;
+  --color-primary-fg: #04141b;
+  --color-ring: #22d3ee;
+
+  /* Estados semánticos (estado equipo, criticidad, prioridad) */
+  --color-success: #34d399;
+  --color-success-fg: #022c22;
+  --color-warning: #fbbf24;
+  --color-warning-fg: #271800;
+  --color-danger: #f87171;
+  --color-danger-fg: #2a0606;
+  --color-info: #60a5fa;
+  --color-info-fg: #04122b;
+
+  /* Sombras */
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
+  --shadow-glow: none; /* el tema cyberpunk lo activa */
+}
+
+/* ── Tema CLARO ─────────────────────────────────────────────── */
+[data-theme="light"] {
+  color-scheme: light;
+  --color-base: #f8fafc;
+  --color-surface: #f1f5f9;
+  --color-card: #ffffff;
+  --color-modal: #ffffff;
+  --color-overlay: rgba(15, 23, 42, 0.45);
+
+  --color-fg: #0f172a;
+  --color-fg-secondary: #1e293b;
+  --color-fg-muted: #64748b;
+  --color-fg-faint: #94a3b8;
+
+  --color-border: rgba(15, 23, 42, 0.1);
+  --color-border-strong: rgba(15, 23, 42, 0.18);
+
+  --color-primary: #0891b2;
+  --color-primary-hover: #0e7490;
+  --color-primary-fg: #ffffff;
+  --color-ring: #0891b2;
+
+  --color-success: #059669;
+  --color-success-fg: #ffffff;
+  --color-warning: #d97706;
+  --color-warning-fg: #ffffff;
+  --color-danger: #dc2626;
+  --color-danger-fg: #ffffff;
+  --color-info: #2563eb;
+  --color-info-fg: #ffffff;
+
+  --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.1);
+  --shadow-md: 0 10px 15px -3px rgba(15, 23, 42, 0.12);
+  --shadow-lg: 0 20px 25px -5px rgba(15, 23, 42, 0.14);
+}
+
+/* ── Tema CYBERPUNK (oscuro + neón fosforescente) ───────────── */
+[data-theme="cyberpunk"] {
+  color-scheme: dark;
+  --color-base: #05010a;
+  --color-surface: #0c0518;
+  --color-card: #120a24;
+  --color-modal: #0a0414;
+  --color-overlay: rgba(0, 0, 0, 0.8);
+
+  --color-fg: #ecf9ff;
+  --color-fg-secondary: #c7b8ff;
+  --color-fg-muted: #8a7fb8;
+  --color-fg-faint: #5b5280;
+
+  --color-border: rgba(0, 240, 255, 0.18);
+  --color-border-strong: rgba(0, 240, 255, 0.4);
+
+  --color-primary: #00f0ff;          /* cyan neón */
+  --color-primary-hover: #5cf6ff;
+  --color-primary-fg: #02141a;
+  --color-ring: #00f0ff;
+
+  --color-success: #39ff14;          /* verde fosforescente */
+  --color-success-fg: #021400;
+  --color-warning: #ffe600;
+  --color-warning-fg: #1a1700;
+  --color-danger: #ff3b6b;
+  --color-danger-fg: #1f0008;
+  --color-info: #b14eff;             /* magenta/violeta neón */
+  --color-info-fg: #0e0220;
+
+  /* Resplandor característico del estilo */
+  --shadow-glow: 0 0 16px -2px var(--color-primary);
+}
+
+/* ── Base global ────────────────────────────────────────────── */
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent; /* sin flash azul al tocar en mobile */
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    font-family: var(--font-sans);
+    background-color: var(--color-base);
+    color: var(--color-fg);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Anillo de foco accesible y consistente en todo el sistema */
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+
+  /* Scrollbar discreta */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border-strong) transparent;
+  }
+}
