@@ -32,8 +32,15 @@ import { OTDetailPage } from '@/pages/ot/OTDetailPage';
 import { FormInstancePage } from '@/pages/ot/FormInstancePage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 import { ProtectedRoute } from './ProtectedRoute';
+// Sprint 3
+import { EquiposPage } from '@/pages/equipos/EquiposPage';
+import { EquipoDetallePage } from '@/pages/equipos/EquipoDetallePage';
+import { ZonasPage } from '@/pages/admin/ZonasPage';
+import { TiposEquipoPage } from '@/pages/admin/TiposEquipoPage';
+import { EquiposAdminPage } from '@/pages/admin/EquiposAdminPage';
+import { UsuariosPage } from '@/pages/admin/UsuariosPage';
 
-// Páginas placeholder para sprints futuros — se reemplazan con la implementación real
+// Placeholder para módulos de sprints futuros
 const ComingSoonPage = ({ title }: { title: string }) => (
   <div className="flex flex-col items-center justify-center h-64 gap-3">
     <p className="font-mono text-xs text-[var(--color-fg-faint)] uppercase tracking-widest">
@@ -65,8 +72,8 @@ export const router = createBrowserRouter([
       { path: 'ot', element: <OTListPage /> },
       { path: 'ot/:id', element: <OTDetailPage /> },
       { path: 'ot/:workOrderId/assets/:assetId/form', element: <FormInstancePage /> },
-      { path: 'equipos', element: <ComingSoonPage title="Equipos" /> },
-      { path: 'equipos/:tag', element: <ComingSoonPage title="Ficha Equipo" /> },
+      { path: 'equipos', element: <EquiposPage /> },
+      { path: 'equipos/:tag', element: <EquipoDetallePage /> },
       { path: 'mp', element: <ComingSoonPage title="Mantenimiento Preventivo" /> },
       { path: 'tickets', element: <ComingSoonPage title="Tickets" /> },
       { path: 'inventario', element: <ComingSoonPage title="Inventario" /> },
@@ -79,10 +86,10 @@ export const router = createBrowserRouter([
         ),
         children: [
           { index: true, element: <Navigate to="zonas" replace /> },
-          { path: 'zonas', element: <ComingSoonPage title="Zonas" /> },
-          { path: 'tipos', element: <ComingSoonPage title="Tipos de Equipo" /> },
-          { path: 'equipos', element: <ComingSoonPage title="Alta de Equipos" /> },
-          { path: 'usuarios', element: <ComingSoonPage title="Usuarios" /> },
+          { path: 'zonas', element: <ZonasPage /> },
+          { path: 'tipos', element: <TiposEquipoPage /> },
+          { path: 'equipos', element: <EquiposAdminPage /> },
+          { path: 'usuarios', element: <UsuariosPage /> },
         ],
       },
     ],
