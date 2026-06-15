@@ -1,0 +1,20 @@
+{
+  "name": "cmms-hvac-pro",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CMMS HVAC PRO — Vercel Functions backend",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^0.10.4",
+    "@vercel/node": "^5.0.2",
+    "jose": "^5.10.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/pg": "^8.11.0",
+    "pg": "^8.13.3",
+    "typescript": "^5.7.3"
+  }
+}

@@ -22,22 +22,28 @@ if ($remotes -contains "origin") {
     git remote add origin $REPO_URL
 }
 
-if (-not (Test-Path ".gitignore")) {
-    $gitignoreContent = "node_modules/`ndist/`n.env`n.env.local`n*.log`n~$*"
-    Set-Content -Path ".gitignore" -Value $gitignoreContent -Encoding utf8
-}
-
 Write-Host "Agregando archivos..." -ForegroundColor Yellow
 git add -A
 
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm"
-git commit -m "feat: Sprint 1 completo - Router v7 + Auth + Shell + Vercel config ($timestamp)"
+git commit -m "feat: backend API + schema base + migration runner + fix equipos API [$timestamp]"
 
 Write-Host "Subiendo a GitHub..." -ForegroundColor Yellow
 git push --force-with-lease origin $BRANCH
 
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Reintentando con force..." -ForegroundColor Yellow
+    git push --force origin $BRANCH
+}
+
 Write-Host ""
-Write-Host "Listo. Revisa: https://github.com/nelsonbravosalas-creator/Claude-CMMS-HVAC-Pro" -ForegroundColor Green
+if ($LASTEXITCODE -eq 0) {
+    Write-Host "Listo. Vercel compilara automaticamente." -ForegroundColor Green
+    Write-Host "GitHub  : https://github.com/nelsonbravosalas-creator/Claude-CMMS-HVAC-Pro"
+    Write-Host "Vercel  : https://vercel.com/d-los-cabros-s-projects/claude-cmms-hvac-pro"
+} else {
+    Write-Host "Error al subir. Verifica tu acceso a GitHub." -ForegroundColor Red
+}
 Write-Host ""
 Write-Host "Presiona Enter para cerrar..."
 Read-Host

@@ -1,11 +1,11 @@
 # FASE 2 — PLAN DE IMPLEMENTACIÓN FRONTEND
 ## CMMS HVAC PRO — Sistema de Gestión de Mantenimiento
 
-**Versión:** 1.0  
-**Fecha:** 2026-06-13  
+**Versión:** 1.1  
+**Fecha:** 2026-06-14  
 **Duración Estimada:** 39 días  
 **Paralela con:** Fase 3 Backend  
-**Estado:** Listo para Kickoff
+**Estado:** 🟢 EN PROGRESO — Sprint 1 completado, deploy en Vercel live
 
 ---
 
@@ -14,14 +14,85 @@
 Fase 2 implementa la capa frontend del CMMS HVAC PRO con enfoque **offline-first PWA**, sincronización en tiempo real y UX optimizada para técnicos en terreno.
 
 **Artifacts principales:**
-- ✅ Dexie v16 schema (18 tablas)
-- ✅ Binding engine (auto-cálculos narrativos OT)
-- ✅ Form renderer dinámico (checklist por tipo equipo)
-- ✅ OT multi-tag workflow
-- ✅ Dashboards (OT Progress, Indicadores, Equipo)
-- ✅ Web Push notifications
-- ✅ Sync engine (pull/merge/conflict-resolution)
-- ✅ Componentes UI (mobile-first, 3 themes)
+- ✅ Dexie v17 schema (23 tablas — expandido desde v16)
+- ⬜ Binding engine (auto-cálculos narrativos OT)
+- ⬜ Form renderer dinámico (checklist por tipo equipo)
+- ⬜ OT multi-tag workflow
+- ⬜ Dashboards (OT Progress, Indicadores, Equipo)
+- ⬜ Web Push notifications
+- ⬜ Sync engine (pull/merge/conflict-resolution)
+- ✅ Componentes UI base (mobile-first, 3 themes, AppLayout)
+
+---
+
+## PROGRESO ACTUAL — 2026-06-14
+
+### ✅ SPRINT 1 COMPLETADO (Fundación)
+
+| Item | Archivo | Estado |
+|------|---------|--------|
+| Dexie v17 schema (23 tablas) | `src/db/schema.v16.ts` | ✅ |
+| TypeScript types completos | `src/db/types.ts` | ✅ |
+| AuthContext (JWT + PIN PBKDF2) | `src/context/AuthContext.tsx` | ✅ |
+| React Router v7 (createBrowserRouter) | `src/router/index.tsx` | ✅ |
+| ProtectedRoute (RBAC) | `src/router/ProtectedRoute.tsx` | ✅ |
+| AppLayout (sidebar + bottom nav) | `src/layouts/AppLayout.tsx` | ✅ |
+| LoginPage (password + PIN offline) | `src/pages/LoginPage.tsx` | ✅ |
+| DashboardPage (placeholder KPIs) | `src/pages/DashboardPage.tsx` | ✅ |
+| OTListPage (mock data) | `src/pages/ot/OTListPage.tsx` | ✅ |
+| Theme system (dark/light/cyberpunk) | `src/components/ui/ThemeProvider.tsx` | ✅ |
+| Font Rajdhani + JetBrains Mono | `src/index.css` | ✅ |
+| TanStack Query v5 + QueryClient | `src/main.tsx` | ✅ |
+| Vercel config (monorepo build) | `vercel.json` | ✅ |
+| Dev proxy (VITE_DEV_API_TARGET) | `frontend/vite.config.ts` | ✅ |
+| Deploy live en Vercel | [ver URL abajo] | ✅ |
+| Contrato sync.ts corregido (4 bugs) | `shared/contracts/sync.ts` | ✅ |
+| TypeScript `tsc --noEmit` | 0 errores | ✅ |
+
+**URL deploy:** `https://claude-cmms-hvac-pro-bivg-34v88wumn-d-los-cabros-s-projects.vercel.app/`  
+**Repo:** `https://github.com/nelsonbravosalas-creator/Claude-CMMS-HVAC-Pro`
+
+**Pendiente Sprint 1:**
+- [ ] `VITE_API_URL` configurar en Vercel → Settings → Env Vars (necesita URL backend real)
+
+---
+
+### 🔵 SPRINT 2 — PRÓXIMO (OT + Checklist)
+
+**Objetivo:** Técnico puede ver OTs reales, abrir un checklist, llenarlo y auto-guardarlo.
+
+| Item | Descripción | Prioridad |
+|------|-------------|-----------|
+| `useOTs` hook | TanStack Query → Dexie → OTs reales | 🔴 |
+| OTDetailPage | Detalle OT con lista de tags/activos | 🔴 |
+| FieldRenderer | text, number, select, boolean, medicion | 🔴 |
+| FormInstancePage | Llenar checklist por tag | 🔴 |
+| Auto-save checklist | Guardar cada cambio en Dexie | 🔴 |
+| SyncStatusBadge | Indicador online/offline | 🟡 |
+
+---
+
+### 🔵 SPRINT 3 — FIRMA + ADMIN (después de Sprint 2)
+
+| Item | Descripción | Prioridad |
+|------|-------------|-----------|
+| SignaturePad | Canvas → PNG, touch + mouse | 🔴 |
+| PhotoCapture | Cámara trasera mobile | 🔴 |
+| Validación cierre OT | Todos los tags completado/omitido | 🔴 |
+| CRUD Zonas | Admin panel | 🟡 |
+| CRUD Tipos de Equipo | Con campos dinámicos JSON | 🟡 |
+| CRUD Equipos | Con auto-TAG generation | 🔴 |
+| CRUD Usuarios | Con roles y cliente_id | 🟡 |
+
+---
+
+### 🔵 SPRINT 4-6 — PENDIENTES
+
+| Sprint | Enfoque |
+|--------|---------|
+| Sprint 4 | Sync engine offline (queue + pull/push + LWW) |
+| Sprint 5 | Dashboards reales (KPIs, MTBF, calendario) |
+| Sprint 6 | PWA (Service Worker, manifest, push notifications) |
 
 ---
 
@@ -1963,17 +2034,30 @@ FE-DASH-01 (Dashboard Home)
 
 ## PRÓXIMOS PASOS
 
-1. **Ajustar estimados** con equipo real
-2. **Asignar devs** a cada módulo
-3. **Crear tickets** en Jira/Linear
-4. **Kick-off meeting** para alineación
-5. **Setup ambiente** (Vite, Dexie, Git)
-6. **Comenzar Semana 1: Infraestructura**
+### Inmediato (Sprint 2 — comenzar ahora)
+
+1. **Confirmar URL del backend** → configurar `VITE_API_URL` en Vercel y `.env.local`
+2. **Implementar `useOTs` hook** → TanStack Query + Dexie, reemplazar mock en OTListPage
+3. **OTDetailPage** → vista de detalle con lista de tags/activos asignados
+4. **FieldRenderer** → dispatcher por tipo de campo (text, number, select, boolean, medicion)
+5. **FormInstancePage** → llenar checklist por tag con auto-save en Dexie
+
+### Después (Sprint 3)
+
+6. **SignaturePad** → canvas touch + mouse → PNG
+7. **PhotoCapture** → cámara trasera mobile
+8. **Admin CRUD** → Equipos (con TAG auto), Zonas, Tipos, Usuarios
+
+### Backend pendiente (Nelson debe hacer o coordinar)
+
+- Aplicar 3 migraciones SQL en Neon (`db/migrations/`)
+- Confirmar endpoints activos: `POST /api/auth/login`, `GET /api/work-orders`, `GET /api/sync/pull`
 
 ---
 
-**Plan Fase 2 Frontend — Listo para Implementación**  
-**Duración:** 6 semanas (39 días en paralelo con Fase 3)  
-**Kick-off:** [Tu fecha aquí]  
-**Deadline:** Fase 2 completada [+39 días]
+**Plan Fase 2 Frontend — En progreso**  
+**Sprint 1:** ✅ Completado (2026-06-14)  
+**Sprint 2:** 🔵 Por comenzar  
+**Duración restante estimada:** ~28 días (5 sprints)  
+**Deploy:** https://claude-cmms-hvac-pro-bivg-34v88wumn-d-los-cabros-s-projects.vercel.app/
 

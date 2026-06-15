@@ -72,7 +72,8 @@ async function hashPin(pin: string, salt: Uint8Array): Promise<string> {
     'raw', enc.encode(pin), 'PBKDF2', false, ['deriveBits'],
   );
   const bits = await crypto.subtle.deriveBits(
-    { name: 'PBKDF2', hash: 'SHA-256', salt, iterations: 100_000 },
+    // new Uint8Array(salt) garantiza ArrayBuffer simple (fix TS 5.7 strict generics)
+    { name: 'PBKDF2', hash: 'SHA-256', salt: new Uint8Array(salt), iterations: 100_000 },
     keyMaterial, 256,
   );
   return btoa(String.fromCharCode(...new Uint8Array(bits)));
