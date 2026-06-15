@@ -4,7 +4,7 @@
   "private": true,
   "description": "CMMS HVAC PRO — Vercel Functions backend",
   "engines": {
-    "node": ">=20"
+    "node": ">=22.12.0"
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.10.4",
