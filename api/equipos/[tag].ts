@@ -60,11 +60,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       if (!rows[0]) return res.status(404).json({ message: 'Equipo no encontrado' });
 
-      // Últimas 10 OTs que incluyeron este equipo
+      // Últimas 10 OTs que incluyeron este equipo (JOIN a través de asset_id)
       const ots = await sql`
         SELECT
           wo.uuid_sync   AS work_order_id,
-          wo.folio,
+          wo.id          AS folio,
           wo.tipo,
           wo.estado,
           wo.fecha_programada,
@@ -72,9 +72,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           woa.estado     AS asset_estado
         FROM work_order_assets woa
         JOIN work_orders wo ON wo.uuid_sync = woa.work_order_id
-        WHERE woa.tag        = ${tag}
-          AND wo.cliente_id  = ${cliente_id}
-          AND wo.deleted_at  IS NULL
+        JOIN assets      a  ON a.uuid_sync  = woa.asset_id
+        WHERE a.tag         = ${tag}
+          AND wo.cliente_id = ${cliente_id}
+          AND wo.deleted_at IS NULL
         ORDER BY wo.updated_at DESC
         LIMIT 10
       `;

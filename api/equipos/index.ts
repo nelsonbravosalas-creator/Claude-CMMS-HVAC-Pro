@@ -22,7 +22,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { cliente_id } = payload;
 
   if (req.method === 'GET') {
-    const { sucursal_id, tipo_id, estado, criticidad } = req.query as Record<string, string | undefined>;
+    const { sucursal_id, tipo_id, estado, criticidad } = req.query;
 
     try {
       const rows = await sql`
@@ -47,14 +47,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           cat.nombre     AS tipo_nombre,
           cat.tipo_codigo
         FROM assets a
-        LEFT JOIN sucursales         s   ON s.uuid_sync  = a.sucursal_id
+        LEFT JOIN sucursales          s   ON s.uuid_sync  = a.sucursal_id
         LEFT JOIN catalog_asset_types cat ON cat.uuid_sync = a.tipo_id
         WHERE a.cliente_id = ${cliente_id}
           AND a.deleted_at IS NULL
-          AND (${sucursal_id ?? null} IS NULL OR a.sucursal_id = ${sucursal_id ?? null}::uuid)
-          AND (${tipo_id ?? null} IS NULL OR a.tipo_id = ${tipo_id ?? null}::uuid)
-          AND (${estado ?? null} IS NULL OR a.estado = ${estado ?? null})
-          AND (${criticidad ?? null} IS NULL OR a.criticidad = ${criticidad ?? null})
+          ${sucursal_id ? sql`AND a.sucursal_id = ${sucursal_id as string}` : sql``}
+          ${tipo_id     ? sql`AND a.tipo_id     = ${tipo_id as string}`     : sql``}
+          ${estado      ? sql`AND a.estado      = ${estado as string}`      : sql``}
+          ${criticidad  ? sql`AND a.criticidad  = ${criticidad as string}`  : sql``}
         ORDER BY a.tag
       `;
       return res.status(200).json({ equipos: rows });
