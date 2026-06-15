@@ -74,6 +74,12 @@ export class CMSSHVACDatabase extends Dexie {
   inventory_movements!: Table<T.InventoryMovement>;
   mp_plans!: Table<T.MpPlan>;
 
+  // ============================================
+  // FORMULARIOS (v18)
+  // ============================================
+
+  form_templates!: Table<T.FormTemplate>;
+
   constructor() {
     super('cmmsHVACPRO');
 
@@ -343,6 +349,27 @@ export class CMSSHVACDatabase extends Dexie {
        */
       mp_plans:
         'mp_plan_id, tag, [cliente_id+estado], proxima_ejecucion, cliente_id',
+    });
+
+    // ============================================
+    // V18 — Formularios dinámicos (RN-FORM)
+    // ============================================
+    // form_templates es pull-only: solo el servidor las crea/publica.
+    // El cliente descarga y renderiza basado en tipo_id del activo.
+
+    this.version(18).stores({
+      /**
+       * Form Templates — Plantillas de checklist por tipo de equipo
+       * PK: form_template_id (= uuid_sync en BD)
+       *
+       * Búsquedas:
+       * - [cliente_id+codigo] para lookup por código único
+       * - [cliente_id+tipo_id] para cargar template del tipo del activo
+       * - activo para filtrar plantillas publicadas
+       * - updated_at para pull incremental
+       */
+      form_templates:
+        'form_template_id, [cliente_id+codigo], [cliente_id+tipo_id], cliente_id, activo, updated_at',
     });
 
     // ============================================

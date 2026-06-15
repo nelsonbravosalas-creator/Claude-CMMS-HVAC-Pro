@@ -28,6 +28,8 @@ import { AppLayout } from '@/layouts/AppLayout';
 import { LoginPage } from '@/pages/LoginPage';
 import { DashboardPage } from '@/pages/DashboardPage';
 import { OTListPage } from '@/pages/ot/OTListPage';
+import { OTDetailPage } from '@/pages/ot/OTDetailPage';
+import { FormInstancePage } from '@/pages/ot/FormInstancePage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 import { ProtectedRoute } from './ProtectedRoute';
 
@@ -61,7 +63,8 @@ export const router = createBrowserRouter([
       { index: true, element: <Navigate to="dashboard" replace /> },
       { path: 'dashboard', element: <DashboardPage /> },
       { path: 'ot', element: <OTListPage /> },
-      { path: 'ot/:id', element: <ComingSoonPage title="Detalle OT" /> },
+      { path: 'ot/:id', element: <OTDetailPage /> },
+      { path: 'ot/:workOrderId/assets/:assetId/form', element: <FormInstancePage /> },
       { path: 'equipos', element: <ComingSoonPage title="Equipos" /> },
       { path: 'equipos/:tag', element: <ComingSoonPage title="Ficha Equipo" /> },
       { path: 'mp', element: <ComingSoonPage title="Mantenimiento Preventivo" /> },

@@ -784,6 +784,86 @@ export interface InventoryMovement {
 }
 
 // ============================================
+// FORMULARIOS DINÁMICOS (RN-FORM)
+// ============================================
+
+/**
+ * FieldBinding — Proyección de respuesta hacia narrativos de la OT (RN-FORM-05)
+ *
+ * modos:
+ * - set:    sobreescribe el narrativo con el valor
+ * - append: agrega al narrativo en nueva línea con guión "- valor"
+ * - lista:  agrega con viñeta "• valor"
+ *
+ * solo_si_hallazgo: si true, solo agrega al narrativo cuando el campo detectó hallazgo
+ */
+export interface FieldBinding {
+  target: 'hallazgo' | 'diagnostico' | 'recomendaciones' | 'conclusiones';
+  mode: 'set' | 'append' | 'lista';
+  prefix?: string;           // Texto antes del valor: "T° impulsión: "
+  suffix?: string;           // Texto después del valor: " °C"
+  solo_si_hallazgo?: boolean;
+}
+
+/**
+ * FormTemplateField — Definición de un campo dentro de una plantilla
+ *
+ * Tipos de campo:
+ * - text:     Texto libre
+ * - number:   Número (validación de rango)
+ * - medicion: Número con unidad física + indicador visual de rango
+ * - select:   Lista de opciones predefinidas
+ * - checkbox: Booleano (marcado/desmarcado)
+ * - date:     Fecha
+ * - firma:    Firma digital (canvas → PNG)
+ * - foto:     Captura de cámara o galería
+ *
+ * es_hallazgo_si:
+ * - Para 'select'/'checkbox': lista de valores que activan hallazgo
+ *   Ej select: ["sucio", "obstruido"]
+ *   Ej checkbox: [false] (desmarcado = hallazgo)
+ * - Para 'number'/'medicion': no se usa; hallazgo = valor fuera de rango_min/rango_max
+ */
+export interface FormTemplateField {
+  id: string;                // "presion_suministro"
+  nombre: string;            // "Presión de suministro"
+  tipo: 'text' | 'number' | 'select' | 'checkbox' | 'firma' | 'foto' | 'date' | 'medicion';
+  requerido: boolean;
+  opciones?: string[];       // Para tipo 'select'
+  rango_min?: number;        // Para 'number'/'medicion'
+  rango_max?: number;
+  unidad?: string;           // "PSI", "°C", "Hz", "V", "A"
+  placeholder?: string;
+  es_hallazgo_si?: (string | number | boolean)[];
+  binding?: FieldBinding;
+  orden: number;
+}
+
+/**
+ * FormTemplate — Plantilla de checklist versionada (RN-FORM-01/02)
+ *
+ * Pull-only: las crea el admin en el servidor; el cliente solo descarga.
+ * version: al instanciar, form_instance congela template_version.
+ * categoria: nombre de categoría (desnormalizado desde form_categories).
+ * campos: array de campos ordenados por campo.orden.
+ */
+export interface FormTemplate {
+  form_template_id: string;  // uuid_sync en BD
+  cliente_id: string;        // FK clientes
+  tipo_id?: string;          // FK catalog_asset_types (NULL = genérica)
+  categoria_id?: string;     // FK form_categories
+  categoria: string;         // Nombre categoría desnormalizado: "HVAC", "UPS"
+  codigo: string;            // "HVAC-SPLIT-MP-v1"
+  nombre: string;            // "Checklist MP Split/Fan Coil"
+  version: number;
+  campos: FormTemplateField[];
+  activo: boolean;
+  published_at?: Date;
+  created_at: Date;
+  updated_at: Date;
+}
+
+// ============================================
 // MANTENIMIENTO PREVENTIVO (RN-MP)
 // ============================================
 
