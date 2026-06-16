@@ -25,7 +25,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const rows = await sql`
-      SELECT user_id, cliente_id, nombre, email, rol, estado, password_hash
+      SELECT uuid_sync AS user_id, cliente_id, nombre, email, rol, estado, password_hash
       FROM users
       WHERE email = ${email.toLowerCase().trim()}
       LIMIT 1
