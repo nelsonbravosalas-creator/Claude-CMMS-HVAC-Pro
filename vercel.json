@@ -11,6 +11,7 @@
     { "source": "/api/tipos-equipo",          "destination": "/api/catalog?resource=tipos-equipo" },
     { "source": "/api/usuarios/:id",          "destination": "/api/catalog?resource=usuarios&id=:id" },
     { "source": "/api/usuarios",              "destination": "/api/catalog?resource=usuarios" },
+    { "source": "/api/tickets/:id",           "destination": "/api/tickets?id=:id" },
     { "source": "/(.*)",                      "destination": "/index.html" }
   ],
   "headers": [

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { ticketMachine, type TicketContext } from '../tickets/ticket.machine';
+import { ticketMachine, transicionesDisponibles, type TicketContext } from '../tickets/ticket.machine';
 
 const sinEvidencia: TicketContext = {};
 const conTexto: TicketContext = { evidencia: { texto: 'Se reemplazó el capacitor del compresor.' } };
@@ -37,5 +37,27 @@ describe('Ticket — máquina de estados', () => {
 
   it('cerrado es terminal', () => {
     expect(ticketMachine.isTerminal('cerrado')).toBe(true);
+  });
+});
+
+describe('Ticket — transicionesDisponibles (botones de acción)', () => {
+  it('técnico solo ve en_progreso desde abierto (resuelto es de supervisor/cliente)', () => {
+    expect(transicionesDisponibles('abierto', 'tecnico')).toEqual(['en_progreso']);
+  });
+
+  it('supervisor ve resuelto desde en_progreso (observado es solo de cliente)', () => {
+    expect(transicionesDisponibles('en_progreso', 'supervisor')).toEqual(['resuelto']);
+  });
+
+  it('cliente ve resuelto y observado desde en_progreso', () => {
+    expect(transicionesDisponibles('en_progreso', 'cliente')).toEqual(['resuelto', 'observado']);
+  });
+
+  it('cerrado no tiene transiciones disponibles para nadie', () => {
+    expect(transicionesDisponibles('cerrado', 'administrador')).toEqual([]);
+  });
+
+  it('programador NO tiene corto-circuito a nivel de máquina de estados (solo en permissions.ts)', () => {
+    expect(transicionesDisponibles('observado', 'programador')).toEqual(['en_progreso']);
   });
 });

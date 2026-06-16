@@ -5,7 +5,7 @@
 **Fecha:** 2026-06-14  
 **Duración Estimada:** 39 días  
 **Paralela con:** Fase 3 Backend  
-**Estado:** 🟢 EN PROGRESO — Sprint 1 completado, deploy en Vercel live
+**Estado:** 🟢 EN PROGRESO — Sprints 1-5 completados (Tickets), deploy en Vercel live
 
 ---
 
@@ -25,7 +25,7 @@ Fase 2 implementa la capa frontend del CMMS HVAC PRO con enfoque **offline-first
 
 ---
 
-## PROGRESO ACTUAL — 2026-06-14
+## PROGRESO ACTUAL — 2026-06-16
 
 ### ✅ SPRINT 1 COMPLETADO (Fundación)
 
@@ -57,42 +57,79 @@ Fase 2 implementa la capa frontend del CMMS HVAC PRO con enfoque **offline-first
 
 ---
 
-### 🔵 SPRINT 2 — PRÓXIMO (OT + Checklist)
+### ✅ SPRINT 2 COMPLETADO (OT + Checklist)
 
 **Objetivo:** Técnico puede ver OTs reales, abrir un checklist, llenarlo y auto-guardarlo.
 
-| Item | Descripción | Prioridad |
-|------|-------------|-----------|
-| `useOTs` hook | TanStack Query → Dexie → OTs reales | 🔴 |
-| OTDetailPage | Detalle OT con lista de tags/activos | 🔴 |
-| FieldRenderer | text, number, select, boolean, medicion | 🔴 |
-| FormInstancePage | Llenar checklist por tag | 🔴 |
-| Auto-save checklist | Guardar cada cambio en Dexie | 🔴 |
-| SyncStatusBadge | Indicador online/offline | 🟡 |
+| Item | Archivo | Estado |
+|------|---------|--------|
+| `useOTs` hook | `src/hooks/useOTs.ts` | ✅ |
+| OTDetailPage | `src/pages/ot/OTDetailPage.tsx` | ✅ |
+| FieldRenderer | `src/components/forms/FieldRenderer.tsx` | ✅ |
+| FormInstancePage | `src/pages/ot/FormInstancePage.tsx` | ✅ |
+| Auto-save checklist | `useOTDetail.ts` (guardado en Dexie por cambio) | ✅ |
+| SyncStatusBadge | `src/components/shared/SyncStatusBadge.tsx` | ✅ |
 
 ---
 
-### 🔵 SPRINT 3 — FIRMA + ADMIN (después de Sprint 2)
+### ✅ SPRINT 3 COMPLETADO (Firma + Admin)
 
-| Item | Descripción | Prioridad |
-|------|-------------|-----------|
-| SignaturePad | Canvas → PNG, touch + mouse | 🔴 |
-| PhotoCapture | Cámara trasera mobile | 🔴 |
-| Validación cierre OT | Todos los tags completado/omitido | 🔴 |
-| CRUD Zonas | Admin panel | 🟡 |
-| CRUD Tipos de Equipo | Con campos dinámicos JSON | 🟡 |
-| CRUD Equipos | Con auto-TAG generation | 🔴 |
-| CRUD Usuarios | Con roles y cliente_id | 🟡 |
+| Item | Archivo | Estado |
+|------|---------|--------|
+| SignaturePad | Canvas → PNG, touch + mouse | ✅ |
+| PhotoCapture | Cámara trasera mobile | ✅ |
+| Validación cierre OT | Todos los tags completado/omitido | ✅ |
+| CRUD Zonas | `src/pages/admin/ZonasPage.tsx` | ✅ |
+| CRUD Tipos de Equipo | `src/pages/admin/TiposEquipoPage.tsx` | ✅ |
+| CRUD Equipos | `src/pages/admin/EquiposAdminPage.tsx` (auto-TAG) | ✅ |
+| CRUD Usuarios | `src/pages/admin/UsuariosPage.tsx` | ✅ |
 
 ---
 
-### 🔵 SPRINT 4-6 — PENDIENTES
+### ✅ SPRINT 4 COMPLETADO (Sync Engine)
 
-| Sprint | Enfoque |
-|--------|---------|
-| Sprint 4 | Sync engine offline (queue + pull/push + LWW) |
-| Sprint 5 | Dashboards reales (KPIs, MTBF, calendario) |
-| Sprint 6 | PWA (Service Worker, manifest, push notifications) |
+| Item | Descripción | Estado |
+|------|-------------|--------|
+| Sync queue offline | `useSyncEngine` — cola pull/push + LWW | ✅ |
+| Conflict resolution | Last-Write-Wins por `updated_at` | ✅ |
+
+---
+
+### ✅ SPRINT 5 COMPLETADO (Tickets) — 2026-06-16
+
+**Objetivo:** Módulo de Tickets/Incidencias completo: máquina de estados con evidencia obligatoria, asignación de responsable/proveedor, timeline de comentarios.
+
+| Item | Archivo | Estado |
+|------|---------|--------|
+| Migración SQL (additive) | `db/migrations/005_sprint5_tickets.sql` | ✅ |
+| `ticket_sequences` + `assign_ticket_numero()` | Numeración atómica por cliente | ✅ |
+| `protect_closed_ticket()` trigger | Estado terminal inmutable | ✅ |
+| API consolidada | `api/tickets.ts` (list/detail/crear/transicionar/comentar/asignar) | ✅ |
+| Rewrite REST | `vercel.json` (`/api/tickets/:id`) | ✅ |
+| `ticket.machine.ts` | Máquina de estados (RN-VAL-TICKET-01/02) | ✅ |
+| `transicionesDisponibles()` helper | Botones de acción por rol | ✅ |
+| `useTickets` hook | TanStack Query + Dexie, online-only mutations | ✅ |
+| TicketsListPage | Filtros por estado, `src/pages/tickets/TicketsListPage.tsx` | ✅ |
+| CreateTicketPage | `src/pages/tickets/CreateTicketPage.tsx` | ✅ |
+| TicketDetailPage | Transiciones + evidencia + timeline + reasignación | ✅ |
+| Router + Nav | Rutas reales en `router/index.tsx`, fix rol técnico en `AppLayout.tsx` | ✅ |
+| Tests `transicionesDisponibles` | `domain/__tests__/ticket.machine.test.ts` | ✅ |
+
+**Decisiones de arquitectura (Sprint 5):**
+- Migración 100% additiva (sin renombrar columnas existentes); el API hace aliasing de columnas en el `SELECT` para reconciliar nombres legacy de Postgres con los tipos TS.
+- Mutaciones de tickets son **online-only** (no usan `useSyncEngine`): la validación de evidencia y el tope semanal de devoluciones (RN-VAL-TICKET-02) se hacen en el servidor y no son aptas para encolado offline diferido.
+- Lógica de transición de estados está **duplicada** (no importada) entre `ticket.machine.ts` (frontend) y `api/tickets.ts` (backend, runtime serverless aislado) — mismo patrón ya usado por `work_orders`.
+
+---
+
+### 🔵 SPRINT 6 — PENDIENTE (Inventario + MP + PWA)
+
+| Item | Descripción | Prioridad |
+|------|-------------|-----------|
+| Mantención Preventiva (MP) | Calendario + generación automática de OT | 🔴 |
+| Inventario | Stock de repuestos, movimientos, alertas de mínimo | 🔴 |
+| PWA | Service Worker, manifest, push notifications | 🟡 |
+| Dashboards reales | KPIs, MTBF, calendario de planificación | 🟡 |
 
 ---
 
@@ -2034,30 +2071,26 @@ FE-DASH-01 (Dashboard Home)
 
 ## PRÓXIMOS PASOS
 
-### Inmediato (Sprint 2 — comenzar ahora)
+### Inmediato (Sprint 6 — comenzar ahora)
 
-1. **Confirmar URL del backend** → configurar `VITE_API_URL` en Vercel y `.env.local`
-2. **Implementar `useOTs` hook** → TanStack Query + Dexie, reemplazar mock en OTListPage
-3. **OTDetailPage** → vista de detalle con lista de tags/activos asignados
-4. **FieldRenderer** → dispatcher por tipo de campo (text, number, select, boolean, medicion)
-5. **FormInstancePage** → llenar checklist por tag con auto-save en Dexie
-
-### Después (Sprint 3)
-
-6. **SignaturePad** → canvas touch + mouse → PNG
-7. **PhotoCapture** → cámara trasera mobile
-8. **Admin CRUD** → Equipos (con TAG auto), Zonas, Tipos, Usuarios
+1. **Mantención Preventiva (MP)** → calendario de planificación + generación automática de OT preventivas
+2. **Inventario** → stock de repuestos, movimientos de entrada/salida, alertas de mínimo
+3. **Dashboards reales** → reemplazar KPIs placeholder por datos reales (MTBF, MTBM, OT abiertas/cerradas)
+4. **PWA** → Service Worker, manifest.json, install prompt, push notifications
 
 ### Backend pendiente (Nelson debe hacer o coordinar)
 
-- Aplicar 3 migraciones SQL en Neon (`db/migrations/`)
-- Confirmar endpoints activos: `POST /api/auth/login`, `GET /api/work-orders`, `GET /api/sync/pull`
+- Aplicar migración `db/migrations/005_sprint5_tickets.sql` en Neon (additiva, idempotente)
+- Confirmar endpoints activos: `POST /api/auth/login`, `GET /api/work-orders`, `GET /api/sync/pull`, `GET/POST/PATCH /api/tickets`
 
 ---
 
 **Plan Fase 2 Frontend — En progreso**  
 **Sprint 1:** ✅ Completado (2026-06-14)  
-**Sprint 2:** 🔵 Por comenzar  
-**Duración restante estimada:** ~28 días (5 sprints)  
+**Sprint 2:** ✅ Completado (OT + Checklist)  
+**Sprint 3:** ✅ Completado (Firma + Admin)  
+**Sprint 4:** ✅ Completado (Sync Engine)  
+**Sprint 5:** ✅ Completado (Tickets) — 2026-06-16  
+**Sprint 6:** 🔵 Por comenzar (Inventario + MP + PWA)  
 **Deploy:** https://claude-cmms-hvac-pro-bivg-34v88wumn-d-los-cabros-s-projects.vercel.app/
 

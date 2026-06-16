@@ -15,6 +15,7 @@
 
 import { createStateMachine, type Transition } from '../shared/stateMachine';
 import { ok, err, type Result } from '../shared/result';
+import type { Role } from '../permissions/permissions';
 
 export type TicketState = 'abierto' | 'en_progreso' | 'observado' | 'resuelto' | 'cerrado';
 
@@ -54,3 +55,15 @@ const transitions: readonly Transition<TicketState, TicketContext>[] = [
 ];
 
 export const ticketMachine = createStateMachine(transitions);
+
+/**
+ * Estados alcanzables desde `from` que `role` puede iniciar, ignorando el
+ * guard de evidencia (esa validación ocurre al confirmar, con el texto/foto
+ * que ingrese el usuario). Útil para pintar los botones de acción disponibles.
+ */
+export function transicionesDisponibles(from: TicketState, role: Role): TicketState[] {
+  const evidenciaSatisfecha: TicketContext = { evidencia: { texto: 'x'.repeat(MIN_TEXTO) } };
+  return ticketMachine.next(from).filter(
+    to => ticketMachine.can(from, to, role, evidenciaSatisfecha).ok,
+  );
+}

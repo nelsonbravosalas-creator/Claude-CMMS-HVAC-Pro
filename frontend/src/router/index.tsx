@@ -12,9 +12,11 @@
  *     ot/:id                → OTDetailPage (Sprint 2)
  *     equipos               → EquiposPage (Sprint 2)
  *     equipos/:tag          → EquipoDetallePage (Sprint 2)
- *     mp                    → MpListPage (Sprint 5)
- *     tickets               → TicketsPage (Sprint 5)
- *     inventario            → InventarioPage (Sprint 5)
+ *     mp                    → MpListPage (Sprint 6, pendiente)
+ *     tickets               → TicketsListPage (Sprint 5)
+ *     tickets/nuevo         → CreateTicketPage (Sprint 5)
+ *     tickets/:id           → TicketDetailPage (Sprint 5)
+ *     inventario            → InventarioPage (Sprint 6, pendiente)
  *     admin/                → AdminLayout (rol: programador | administrador)
  *       zonas               → ZonasPage (Sprint 3)
  *       tipos               → TiposEquipoPage (Sprint 3)
@@ -40,6 +42,10 @@ import { ZonasPage } from '@/pages/admin/ZonasPage';
 import { TiposEquipoPage } from '@/pages/admin/TiposEquipoPage';
 import { EquiposAdminPage } from '@/pages/admin/EquiposAdminPage';
 import { UsuariosPage } from '@/pages/admin/UsuariosPage';
+// Sprint 5
+import { TicketsListPage } from '@/pages/tickets/TicketsListPage';
+import { TicketDetailPage } from '@/pages/tickets/TicketDetailPage';
+import { CreateTicketPage } from '@/pages/tickets/CreateTicketPage';
 
 // Placeholder para módulos de sprints futuros
 const ComingSoonPage = ({ title }: { title: string }) => (
@@ -77,7 +83,9 @@ export const router = createBrowserRouter([
       { path: 'equipos', element: <EquiposPage /> },
       { path: 'equipos/:tag', element: <EquipoDetallePage /> },
       { path: 'mp', element: <ComingSoonPage title="Mantenimiento Preventivo" /> },
-      { path: 'tickets', element: <ComingSoonPage title="Tickets" /> },
+      { path: 'tickets', element: <TicketsListPage /> },
+      { path: 'tickets/nuevo', element: <CreateTicketPage /> },
+      { path: 'tickets/:id', element: <TicketDetailPage /> },
       { path: 'inventario', element: <ComingSoonPage title="Inventario" /> },
       {
         path: 'admin',

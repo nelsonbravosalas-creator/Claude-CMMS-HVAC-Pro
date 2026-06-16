@@ -68,7 +68,7 @@ const NAV_ITEMS: NavItem[] = [
     shortLabel: 'Tickets',
     icon: '◉',
     path: '/app/tickets',
-    roles: ['programador', 'administrador', 'supervisor', 'cliente', 'proveedor'],
+    roles: ['programador', 'administrador', 'supervisor', 'tecnico', 'cliente', 'proveedor'],
     section: 'main',
   },
   {
