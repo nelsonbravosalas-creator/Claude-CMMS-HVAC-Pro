@@ -30,6 +30,7 @@ import { DashboardPage } from '@/pages/DashboardPage';
 import { OTListPage } from '@/pages/ot/OTListPage';
 import { OTDetailPage } from '@/pages/ot/OTDetailPage';
 import { FormInstancePage } from '@/pages/ot/FormInstancePage';
+import { CreateOTPage } from '@/pages/ot/CreateOTPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 import { ProtectedRoute } from './ProtectedRoute';
 // Sprint 3
@@ -70,6 +71,7 @@ export const router = createBrowserRouter([
       { index: true, element: <Navigate to="dashboard" replace /> },
       { path: 'dashboard', element: <DashboardPage /> },
       { path: 'ot', element: <OTListPage /> },
+      { path: 'ot/nueva', element: <CreateOTPage /> },
       { path: 'ot/:id', element: <OTDetailPage /> },
       { path: 'ot/:workOrderId/assets/:assetId/form', element: <FormInstancePage /> },
       { path: 'equipos', element: <EquiposPage /> },

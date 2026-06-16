@@ -64,6 +64,7 @@ export function OTListPage() {
           <SyncStatusBadge />
           {['programador', 'administrador', 'supervisor'].includes(user?.rol ?? '') && (
             <button
+              onClick={() => navigate('/app/ot/nueva')}
               className={[
                 'px-5 py-2.5 rounded-lg font-bold text-sm tracking-widest uppercase',
                 'bg-[var(--color-primary)] text-[var(--color-primary-fg)]',

@@ -4,7 +4,8 @@
   "outputDirectory": "frontend/dist",
   "framework": null,
   "rewrites": [
-    { "source": "/api/auth/logout",          "destination": "/api/auth/me?action=logout" },
+    { "source": "/api/dashboard",             "destination": "/api/work-orders?action=kpis" },
+    { "source": "/api/auth/logout",           "destination": "/api/auth/me?action=logout" },
     { "source": "/api/sucursales/:id",        "destination": "/api/sucursales?id=:id" },
     { "source": "/api/tipos-equipo/:id",      "destination": "/api/catalog?resource=tipos-equipo&id=:id" },
     { "source": "/api/tipos-equipo",          "destination": "/api/catalog?resource=tipos-equipo" },
