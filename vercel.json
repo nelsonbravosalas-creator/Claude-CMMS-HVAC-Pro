@@ -1,5 +1,5 @@
 {
-  "installCommand": "node --version && npm --version && npm install --include=dev && cd frontend && npm install --include=dev",
+  "installCommand": "node --version && npm --version && NODE_ENV=development npm install && NODE_ENV=development npm install --prefix frontend",
   "buildCommand": "node --version && cd frontend && npm run build",
   "outputDirectory": "frontend/dist",
   "framework": null,
