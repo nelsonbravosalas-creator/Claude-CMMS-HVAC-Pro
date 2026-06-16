@@ -1,22 +1,17 @@
 {
-  "buildCommand": "npm install && cd frontend && npm install && npm run build",
+  "installCommand": "NODE_ENV=development npm install && NODE_ENV=development npm install --prefix frontend",
+  "buildCommand": "cd frontend && npm run build",
   "outputDirectory": "frontend/dist",
-  "installCommand": "echo 'install handled by buildCommand'",
   "framework": null,
-  "functions": {
-    "api/**/*.ts": {
-      "runtime": "@vercel/node@5"
-    }
-  },
   "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
-    },
-    {
-      "source": "/((?!api/).*)",
-      "destination": "/index.html"
-    }
+    { "source": "/api/dashboard",             "destination": "/api/work-orders?action=kpis" },
+    { "source": "/api/auth/logout",           "destination": "/api/auth/me?action=logout" },
+    { "source": "/api/sucursales/:id",        "destination": "/api/sucursales?id=:id" },
+    { "source": "/api/tipos-equipo/:id",      "destination": "/api/catalog?resource=tipos-equipo&id=:id" },
+    { "source": "/api/tipos-equipo",          "destination": "/api/catalog?resource=tipos-equipo" },
+    { "source": "/api/usuarios/:id",          "destination": "/api/catalog?resource=usuarios&id=:id" },
+    { "source": "/api/usuarios",              "destination": "/api/catalog?resource=usuarios" },
+    { "source": "/(.*)",                      "destination": "/index.html" }
   ],
   "headers": [
     {

@@ -1,11 +1,11 @@
 /**
  * _db.ts — Conexión a Neon PostgreSQL
  * Compartido por todos los endpoints de api/
+ *
+ * Fallback placeholder URL prevents neon() from throwing at module load
+ * when DATABASE_URL is absent during Vercel's build-phase module evaluation.
+ * At query time the real DATABASE_URL is always available as a runtime env var.
  */
 import { neon } from '@neondatabase/serverless';
 
-if (!process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL no está configurada en las variables de entorno de Vercel');
-}
-
-export const sql = neon(process.env.DATABASE_URL);
+export const sql = neon(process.env.DATABASE_URL ?? 'postgresql://build:build@placeholder/build');

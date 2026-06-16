@@ -110,34 +110,43 @@ export const BindingTargetEnum = z.enum([
 
 export const FieldBindingSchema = z.object({
   target: BindingTargetEnum,
-  modo: z.enum(['set', 'append', 'lista']),
+  mode: z.enum(['set', 'append', 'lista']),
+  prefix: z.string().optional(),
+  suffix: z.string().optional(),
+  solo_si_hallazgo: z.boolean().optional(),
 });
 
 /** Definición de campo de una plantilla (form_templates.campos_definicion[]) */
 export const FormFieldDefSchema = z.object({
-  key: z.string().min(1),
-  label: z.string().min(1),
-  tipo: z.enum(['text', 'number', 'select', 'boolean', 'date', 'check', 'medicion', 'foto']),
+  id: z.string().min(1),
+  nombre: z.string().min(1),
+  tipo: z.enum(['text', 'number', 'select', 'checkbox', 'date', 'medicion', 'foto', 'firma']),
   requerido: z.boolean(),
   opciones: z.array(z.string()).optional(),
   unidad: z.string().optional(),
+  placeholder: z.string().optional(),
   rango_min: z.number().optional(),
   rango_max: z.number().optional(),
-  /** Valor (o expresión simple) que marca el campo como hallazgo — RN-FORM-06 */
-  es_hallazgo_si: z.union([z.string(), z.number(), z.boolean()]).optional(),
+  /** Lista de valores que activan hallazgo (RN-FORM-06):
+   *  - select:   ["sucio", "obstruido"]
+   *  - checkbox: [false]
+   *  - number/medicion: no se usa (out-of-range es automático) */
+  es_hallazgo_si: z.array(z.union([z.string(), z.number(), z.boolean()])).optional(),
   binding: FieldBindingSchema.optional(),
+  orden: z.number().int().nonnegative(),
 });
 export type FormFieldDef = z.infer<typeof FormFieldDefSchema>;
 
 export const FormTemplateSchema = z.object({
   uuid_sync: z.string().uuid(),
   cliente_id: z.string().uuid(),
-  tipo_id: z.string().uuid().nullable(), // NULL = plantilla genérica
-  categoria_id: z.string().uuid(),
+  tipo_id: z.string().uuid().nullable(),    // NULL = plantilla genérica
+  categoria_id: z.string().uuid().optional(),
+  categoria: z.string().optional(),         // desnormalizado (nombre categoría)
   codigo: z.string().min(1),
   version: z.number().int().positive(),
   nombre: z.string().min(1),
-  campos_definicion: z.array(FormFieldDefSchema),
+  campos: z.array(FormFieldDefSchema),      // alias de campos_definicion en BD
   activo: z.boolean(),
   published_at: z.string().datetime().nullable(),
 });
