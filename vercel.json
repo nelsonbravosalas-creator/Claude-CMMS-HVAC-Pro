@@ -6,6 +6,8 @@
   "rewrites": [
     { "source": "/api/dashboard",             "destination": "/api/work-orders?action=kpis" },
     { "source": "/api/auth/logout",           "destination": "/api/auth/me?action=logout" },
+    { "source": "/api/health",                "destination": "/api/admin" },
+    { "source": "/api/setup",                 "destination": "/api/admin" },
     { "source": "/api/sucursales/:id",        "destination": "/api/sucursales?id=:id" },
     { "source": "/api/tipos-equipo/:id",      "destination": "/api/catalog?resource=tipos-equipo&id=:id" },
     { "source": "/api/tipos-equipo",          "destination": "/api/catalog?resource=tipos-equipo" },
