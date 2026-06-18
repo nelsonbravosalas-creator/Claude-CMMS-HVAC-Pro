@@ -1,14 +1,12 @@
 /**
- * POST /api/setup
- * Ejecuta las migraciones y crea el usuario administrador.
- * PROTEGIDO con SETUP_SECRET para evitar ejecuciones no autorizadas.
- * Usar una sola vez; desactivar después.
+ * GET  /api/admin        — Health check: verifica DB y env vars
+ * POST /api/admin        — Setup: crea tablas y usuario administrador (requiere SETUP_SECRET)
+ *
+ * /api/health redirige aquí via rewrite en vercel.json
  */
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { sql } from './_db';
 import { createHash } from 'crypto';
-import { readFileSync } from 'fs';
-import { join } from 'path';
 
 const SETUP_SECRET = process.env.SETUP_SECRET ?? 'cmms-setup-2026';
 
@@ -16,10 +14,32 @@ function hashPassword(password: string): string {
   return createHash('sha256').update(password).digest('hex');
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') return res.status(405).json({ message: 'Método no permitido' });
+// ── GET /api/admin — health check ────────────────────────────────────────────
 
+async function handleHealth(res: VercelResponse) {
+  const checks: Record<string, string> = {
+    database_url: process.env.DATABASE_URL ? 'configurado' : 'FALTANTE',
+    jwt_secret: process.env.JWT_SECRET ? 'configurado' : 'usando valor por defecto',
+  };
+
+  try {
+    await sql`SELECT 1 AS ok`;
+    checks.database_connection = 'OK';
+  } catch (err) {
+    checks.database_connection = `ERROR: ${err instanceof Error ? err.message : String(err)}`;
+  }
+
+  const allOk = checks.database_url !== 'FALTANTE' && checks.database_connection === 'OK';
+  return res.status(allOk ? 200 : 503).json({
+    status: allOk ? 'ok' : 'degradado',
+    checks,
+    timestamp: new Date().toISOString(),
+  });
+}
+
+// ── POST /api/admin — one-shot setup ─────────────────────────────────────────
+
+async function handleSetup(req: VercelRequest, res: VercelResponse) {
   const { secret } = req.body as { secret?: string };
   if (secret !== SETUP_SECRET) {
     return res.status(403).json({ message: 'Secret incorrecto' });
@@ -28,11 +48,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const log: string[] = [];
 
   try {
-    // ── 1. Extensiones ────────────────────────────────────────────
     await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
     log.push('✓ uuid-ossp extension');
 
-    // ── 2. Tabla clientes ─────────────────────────────────────────
     await sql`
       CREATE TABLE IF NOT EXISTS clientes (
         uuid_sync   uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -48,7 +66,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     `;
     log.push('✓ tabla clientes');
 
-    // ── 3. Tabla sucursales ───────────────────────────────────────
     await sql`
       CREATE TABLE IF NOT EXISTS sucursales (
         uuid_sync   uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -65,7 +82,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     `;
     log.push('✓ tabla sucursales');
 
-    // ── 4. Tabla users ────────────────────────────────────────────
     await sql`
       CREATE TABLE IF NOT EXISTS users (
         uuid_sync     uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -88,7 +104,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     `;
     log.push('✓ tabla users');
 
-    // ── 5. Cliente demo ───────────────────────────────────────────
     await sql`
       INSERT INTO clientes (id, nombre, plan, activo)
       VALUES ('demo-001', 'HVAC PRO Demo', 'professional', true)
@@ -99,7 +114,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const clientes = await sql`SELECT uuid_sync FROM clientes WHERE id = 'demo-001'`;
     const clienteId = (clientes[0] as { uuid_sync: string }).uuid_sync;
 
-    // ── 6. Sucursal demo ──────────────────────────────────────────
     await sql`
       INSERT INTO sucursales (cliente_id, nombre, codigo, activo)
       VALUES (${clienteId}, 'Casa Matriz', 'HQ', true)
@@ -107,7 +121,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     `;
     log.push('✓ sucursal demo');
 
-    // ── 7. Usuario administrador ──────────────────────────────────
     const pwHash = hashPassword('3517');
     await sql`
       INSERT INTO users (cliente_id, nombre, email, password_hash, pin_hash, rol, estado)
@@ -131,11 +144,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).json({ ok: true, log });
 
   } catch (err) {
-    console.error('[/api/setup]', err);
+    console.error('[/api/admin setup]', err);
     return res.status(500).json({
       ok: false,
       error: err instanceof Error ? err.message : String(err),
       log,
     });
   }
+}
+
+// ── Handler principal ─────────────────────────────────────────────────────────
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method === 'GET') return handleHealth(res);
+  if (req.method === 'POST') return handleSetup(req, res);
+  return res.status(405).json({ message: 'Método no permitido' });
 }
