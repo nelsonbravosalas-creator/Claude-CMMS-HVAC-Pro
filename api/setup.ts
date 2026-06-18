@@ -7,8 +7,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { sql } from './_db';
 import { createHash } from 'crypto';
-import { readFileSync } from 'fs';
-import { join } from 'path';
 
 const SETUP_SECRET = process.env.SETUP_SECRET ?? 'cmms-setup-2026';
 
